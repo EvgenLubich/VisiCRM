@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,23 @@ public class AppUser {
     @NotEmpty
     @Column(nullable = false, length = 200)
     private String password;
+
+    @Column(nullable = false, length = 10)
+    private String name;
+
+    @Column(nullable = false, length = 10)
+    private String surname;
+
+    @Column(nullable = false, length = 10)
+    private String patronymic;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date offerin;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date offerout;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -79,5 +97,45 @@ public class AppUser {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public void setPatronymic(String patronymic) {
+        this.patronymic = patronymic;
+    }
+
+    public Date getOfferin() {
+        return offerin;
+    }
+
+    public void setOfferin(Date offerin) {
+        this.offerin = offerin;
+    }
+
+    public Date getOfferout() {
+        return offerout;
+    }
+
+    public void setOfferout(Date offerout) {
+        this.offerout = offerout;
     }
 }

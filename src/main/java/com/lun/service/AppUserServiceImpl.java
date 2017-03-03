@@ -8,6 +8,7 @@ import com.lun.model.AppUser;
 import com.lun.model.Tracking;
 import com.lun.model.UserRole;
 import com.lun.util.APPUtil;
+import com.lun.util.WorkingYear;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,5 +85,14 @@ public class AppUserServiceImpl implements AppUserService {
         } catch (Exception e){
             return 5;
         }
+    }
+
+    @Override
+    public WorkingYear getYears(String userName) {
+
+        AppUser year = appUserDAO.findUserOfferDate(userName);
+        WorkingYear workingYear = new WorkingYear(year);
+
+        return workingYear;
     }
 }

@@ -17,7 +17,6 @@ public class UserRole {
     private int id;
 
     @NotEmpty
-    @SuppressWarnings("unused")
     @Column(unique = true, nullable = false, length = 50)
     private String roleName;
 

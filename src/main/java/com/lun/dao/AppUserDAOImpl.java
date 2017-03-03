@@ -32,4 +32,15 @@ public class AppUserDAOImpl implements AppUserDAO {
     public void persist(AppUser appUser) {
         em.persist(appUser);
     }
+
+    @Override
+    public AppUser findUserOfferDate(String login) {
+        Query query = em.createQuery("SELECT u FROM AppUser u WHERE u.login = :login");
+        query.setParameter("login", login);
+        try {
+            return (AppUser) query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -9,4 +9,5 @@ public interface AppUserDAO {
 
     AppUser findByLogin(String login);
     void persist(AppUser appUser);
+    AppUser findUserOfferDate(String login);
 }

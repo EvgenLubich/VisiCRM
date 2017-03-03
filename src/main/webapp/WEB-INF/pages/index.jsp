@@ -37,7 +37,9 @@
 
     <br>
 
-
+    <c:forEach items="${workingYear}" var="workingYears">
+        ${workingYears}
+    </c:forEach>
 
     <br>
 
