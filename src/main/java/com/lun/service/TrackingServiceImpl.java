@@ -39,13 +39,14 @@ public class TrackingServiceImpl implements TrackingService {
         Calendar c = new GregorianCalendar();
         int year = c.get(c.YEAR);
         int month = c.get(c.MONTH);
+        int today = c.get(c.DAY_OF_MONTH);
         int day = 1;
 
         Calendar c1 = new GregorianCalendar(year, month, day);
         Calendar c2 = new GregorianCalendar(year, month, day);
 
 
-        for (int i = 1; i<= 28; i++) {
+        for (int i = 1; i<= today; i++) {
             if(i>1){
                 c1.add(Calendar.DAY_OF_YEAR, 1);
             }
