@@ -36,10 +36,12 @@
 
 
     <br>
-
+    <div>
+         Статистика за:
     <c:forEach items="${workingYear}" var="workingYears">
-        ${workingYears}
+        <a href="/statistic-${workingYears}">${workingYears}</a>
     </c:forEach>
+    </div>
 
     <br>
 

@@ -7,10 +7,12 @@ import com.lun.model.Tracking;
 import com.lun.service.TrackingService;
 import com.lun.util.Month;
 import com.lun.util.WorkingDay;
+import com.lun.util.WorkingMonthes;
 import com.lun.util.WorkingYear;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +43,13 @@ public class RootController {
         model.addAttribute("workingDay", workingDay);
 //        List<Month> monthses = trackingService.getMonths(principal.getName());
         return "index";
+    }
+
+    @RequestMapping(value = "/statistic-{year}")
+    public String showStatForYear(Model model, @PathVariable int year, Principal principal) {
+        WorkingMonthes workingMonthes = appUserService.getMonthes(principal.getName(), year);
+        model.addAttribute("workingMonthes", workingMonthes.getMonthes());
+        return "year";
     }
 
     @RequestMapping("/adduser")
