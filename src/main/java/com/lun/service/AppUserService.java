@@ -1,5 +1,7 @@
 package com.lun.service;
 
+import com.lun.util.WorkingDay;
+import com.lun.util.WorkingDays;
 import com.lun.util.WorkingMonthes;
 import com.lun.util.WorkingYear;
 
@@ -13,4 +15,5 @@ public interface AppUserService {
     int getUserStatus(String userName);
     WorkingYear getYears(String userName);
     WorkingMonthes getMonthes(String userName, int year);
+    WorkingDays getDays(String userName, int year, String month);
 }

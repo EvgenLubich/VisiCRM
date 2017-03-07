@@ -5,10 +5,7 @@ package com.lun.controller;
  */
 import com.lun.model.Tracking;
 import com.lun.service.TrackingService;
-import com.lun.util.Month;
-import com.lun.util.WorkingDay;
-import com.lun.util.WorkingMonthes;
-import com.lun.util.WorkingYear;
+import com.lun.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,13 +32,10 @@ public class RootController {
         model.addAttribute("currentLogin", principal.getName());
         int status = appUserService.getUserStatus(principal.getName());
         model.addAttribute("status", status);
-//        List<Tracking> trackingListComein = trackingService.getTracksComein(principal.getName());
-//        model.addAttribute("trackingList", trackingListComein);
         WorkingYear workingYear = appUserService.getYears(principal.getName());
         model.addAttribute("workingYear", workingYear.getYears());
         List<WorkingDay> workingDay = trackingService.getWorkingDay(principal.getName());
         model.addAttribute("workingDay", workingDay);
-//        List<Month> monthses = trackingService.getMonths(principal.getName());
         return "index";
     }
 
@@ -49,6 +43,16 @@ public class RootController {
     public String showStatForYear(Model model, @PathVariable int year, Principal principal) {
         WorkingMonthes workingMonthes = appUserService.getMonthes(principal.getName(), year);
         model.addAttribute("workingMonthes", workingMonthes.getMonthes());
+        model.addAttribute("year", year);
+        return "year";
+    }
+
+    @RequestMapping(value = "/statistic-{year}/{month}")
+    public String showStatForMonth(Model model, @PathVariable int year, @PathVariable String month, Principal principal) {
+        //WorkingDays workingDays = appUserService.getDays(principal.getName(), year, month);
+        int currMonth = java.time.Month.valueOf(month).ordinal();
+        List<WorkingDay> workingDay = trackingService.getWorkingDayForSomeMonth(principal.getName(), year, currMonth);
+        model.addAttribute("workingDay", workingDay);
         return "year";
     }
 

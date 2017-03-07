@@ -7,9 +7,7 @@ import com.lun.model.ActionType;
 import com.lun.model.AppUser;
 import com.lun.model.Tracking;
 import com.lun.model.UserRole;
-import com.lun.util.APPUtil;
-import com.lun.util.WorkingMonthes;
-import com.lun.util.WorkingYear;
+import com.lun.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,5 +102,12 @@ public class AppUserServiceImpl implements AppUserService {
         WorkingMonthes monthes = new WorkingMonthes(offerDate, year);
 
         return monthes;
+    }
+
+    @Override
+    public WorkingDays getDays(String userName, int year, String month) {
+        AppUser offerDate = appUserDAO.findUserOfferDate(userName);
+        WorkingDays workingDays = new WorkingDays(offerDate, year, month);
+        return null;
     }
 }

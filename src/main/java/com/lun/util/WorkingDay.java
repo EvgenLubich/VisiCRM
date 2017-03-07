@@ -60,7 +60,6 @@ public class WorkingDay {
                         i++;
                     }
                 }
-
             }
         }
         return sum;

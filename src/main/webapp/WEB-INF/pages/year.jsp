@@ -13,7 +13,7 @@
 </head>
 <body>
 <c:forEach items="${workingMonthes}" var="workingMonthes">
-    <a href="/statistic-${workingMonthes}">${workingMonthes}</a>
+    <a href="/statistic-${year}/${workingMonthes}">${workingMonthes}</a>
 </c:forEach>
 </body>
 </html>

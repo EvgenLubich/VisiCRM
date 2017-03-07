@@ -71,6 +71,7 @@ public class TrackingServiceImpl implements TrackingService {
     @Override
     public List<WorkingDay> getWorkingDayForSomeMonth(String userName, int year, int month) {
         AppUser user = appUserDAO.findByLogin(userName);
+        AppUser offerDate = appUserDAO.findUserOfferDate(userName);
         List<WorkingDay> workingDay = new ArrayList<>();
 
         int y = year;
