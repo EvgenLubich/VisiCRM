@@ -71,23 +71,45 @@ public class TrackingServiceImpl implements TrackingService {
     @Override
     public List<WorkingDay> getWorkingDayForSomeMonth(String userName, int year, int month) {
         AppUser user = appUserDAO.findByLogin(userName);
-        AppUser offerDate = appUserDAO.findUserOfferDate(userName);
+        //AppUser offerDate = appUserDAO.findUserOfferDate(userName);
         List<WorkingDay> workingDay = new ArrayList<>();
 
         int y = year;
         int m = month;
-        int day = 1;
+
+
+
+        Calendar offerIn = new GregorianCalendar();
+        offerIn.setTime(user.getOfferin());
+        int monthStart = offerIn.get(offerIn.MONTH);
+        int yearStart = offerIn.get(offerIn.YEAR);
+        int dayStart = offerIn.get(offerIn.DAY_OF_MONTH);
+
 
         Calendar c = new GregorianCalendar();
-        c.set(Calendar.YEAR, y);
-        c.set(Calendar.MONTH, m);
-        int maxDays = c.getActualMaximum( Calendar.DAY_OF_MONTH );
 
-        Calendar c1 = new GregorianCalendar(year, month, day);
-        Calendar c2 = new GregorianCalendar(year, month, day);
+        Calendar c1;
+        Calendar c2;
+        int maxDays;
+        int day;
 
+        if(y == yearStart && m == monthStart) {
+            day = dayStart;
+            c.set(Calendar.YEAR, y);
+            c.set(Calendar.MONTH, m);
+            maxDays = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+            c1 = new GregorianCalendar(year, month, day);
+            c2 = new GregorianCalendar(year, month, day);
+        } else {
+            day = 1;
+            c.set(Calendar.YEAR, y);
+            c.set(Calendar.MONTH, m);
+            maxDays = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+            c1 = new GregorianCalendar(year, month, day);
+            c2 = new GregorianCalendar(year, month, day);
+        }
 
-        for (int i = 1; i<= maxDays; i++) {
+        for (int i = day; i<= maxDays; i++) {
             if(i>1){
                 c1.add(Calendar.DAY_OF_YEAR, 1);
             }
@@ -109,12 +131,5 @@ public class TrackingServiceImpl implements TrackingService {
         return workingDay;
     }
 
-//    @Override
-//    public List<Tracking> getMonths(String userName) {
-//
-//        AppUser user = appUserDAO.findByLogin(userName);
-//        List<Tracking> months = new ArrayList<>();
-//
-//        return months;
-//    }
+
 }

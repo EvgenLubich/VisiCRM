@@ -12,7 +12,7 @@ public class WorkingDay {
     private String date;
     public String day;
     private long epsent;
-    private long workDay;
+    public long workDay;
     private long comein;
 //    private DateTime dateTime;
     private long away;
@@ -66,7 +66,7 @@ public class WorkingDay {
     }
 
     public long getWorkDay() {
-        long sum = 0;
+        long sum;
         if (getAway() == 0){
             Calendar c1 = new GregorianCalendar();
             Date date = new Date(c1.getTimeInMillis());

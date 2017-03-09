@@ -36,6 +36,10 @@ public class RootController {
         model.addAttribute("workingYear", workingYear.getYears());
         List<WorkingDay> workingDay = trackingService.getWorkingDay(principal.getName());
         model.addAttribute("workingDay", workingDay);
+
+        WorkingOff workingOff = new WorkingOff(workingDay, principal.getName());
+        model.addAttribute("workingOff", workingOff.getCurrWorkingOffTime());
+
         return "index";
     }
 
@@ -49,11 +53,20 @@ public class RootController {
 
     @RequestMapping(value = "/statistic-{year}/{month}")
     public String showStatForMonth(Model model, @PathVariable int year, @PathVariable String month, Principal principal) {
-        //WorkingDays workingDays = appUserService.getDays(principal.getName(), year, month);
+
+        model.addAttribute("currentLogin", principal.getName());
+        int status = appUserService.getUserStatus(principal.getName());
+        model.addAttribute("status", status);
+        WorkingYear workingYear = appUserService.getYears(principal.getName());
+        model.addAttribute("workingYear", workingYear.getYears());
+
         int currMonth = java.time.Month.valueOf(month).ordinal();
         List<WorkingDay> workingDay = trackingService.getWorkingDayForSomeMonth(principal.getName(), year, currMonth);
         model.addAttribute("workingDay", workingDay);
-        return "year";
+
+        WorkingOff workingOff = new WorkingOff(workingDay, principal.getName(), year, currMonth);
+
+        return "history";
     }
 
     @RequestMapping("/adduser")

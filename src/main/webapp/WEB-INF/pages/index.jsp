@@ -107,6 +107,11 @@
         </c:forEach>
     </tbody>
     </table>
+
+    <jsp:useBean id="working" class="java.util.Date"/>
+    <jsp:setProperty name="working" property="time" value="${workingOff}"/>
+    <fmt:formatDate value="${working}" pattern="HH:mm:ss" timeZone="GMT"/>
+
 </div>
 
 
