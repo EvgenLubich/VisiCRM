@@ -35,11 +35,11 @@ public class AppUserServiceImpl implements AppUserService {
     @Transactional
     public void registerUser(String login, String password, String role) {
 
-
+        Date d = new Date();
         UserRole userRole = userRoleDAO.find(role);
         Set<UserRole> roleSet = new HashSet<>();
         roleSet.add(userRole);
-        AppUser appUser = new AppUser(login, APPUtil.encodePassword(password), roleSet);
+        AppUser appUser = new AppUser(login, APPUtil.encodePassword(password), roleSet, d);
         appUserDAO.persist(appUser);
     }
 
@@ -56,6 +56,7 @@ public class AppUserServiceImpl implements AppUserService {
         tracking.setUser(user);
         tracking.setDate(d);
         tracking.setAction(actionType);
+        tracking.setWorkingStatus(1);
         trackingDAO.persist(tracking);
     }
 

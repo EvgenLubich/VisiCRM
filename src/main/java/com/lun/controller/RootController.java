@@ -37,7 +37,8 @@ public class RootController {
         List<WorkingDay> workingDay = trackingService.getWorkingDay(principal.getName());
         model.addAttribute("workingDay", workingDay);
 
-        WorkingOff workingOff = new WorkingOff(workingDay, principal.getName());
+        //WorkingOff workingOff = new WorkingOff(workingDay, principal.getName());
+        WorkingOff workingOff = trackingService.getWorkingOff(workingDay, principal.getName());
         model.addAttribute("currWorkingOff", workingOff.getCurrWorkingOffTime());
         model.addAttribute("workingOff", workingOff.getWorkingOffTime());
 

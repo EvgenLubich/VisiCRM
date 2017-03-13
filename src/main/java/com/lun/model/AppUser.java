@@ -67,10 +67,11 @@ public class AppUser {
 
     public AppUser() {}
 
-    public AppUser(String login, String password, Set<UserRole> userRoles) {
+    public AppUser(String login, String password, Set<UserRole> userRoles, Date offerin) {
         this.login = login;
         this.password = password;
         this.userRoles = new HashSet<>(userRoles);
+        this.offerin = offerin;
     }
 
     public AppUser(String login, String password) {

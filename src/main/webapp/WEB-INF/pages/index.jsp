@@ -108,10 +108,8 @@
     </tbody>
     </table>
 
-    <jsp:useBean id="working" class="java.util.Date"/>
-    <jsp:setProperty name="working" property="time" value="${currWorkingOff}"/>
-    <fmt:formatDate value="${working}" pattern="HH:mm:ss" timeZone="GMT"/>
 
+    ${currWorkingOff}
     ${workingOff}
 
 </div>

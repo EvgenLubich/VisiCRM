@@ -7,6 +7,7 @@ import com.lun.model.AppUser;
 import com.lun.model.Tracking;
 import com.lun.util.Month;
 import com.lun.util.WorkingDay;
+import com.lun.util.WorkingOff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -131,5 +132,14 @@ public class TrackingServiceImpl implements TrackingService {
         return workingDay;
     }
 
+    @Override
+    public WorkingOff getWorkingOff(List<WorkingDay> workingDay, String userName) {
+
+        AppUser user = appUserDAO.findByLogin(userName);
+
+        WorkingOff workingOff = new WorkingOff(workingDay, user);
+
+        return workingOff;
+    }
 
 }
