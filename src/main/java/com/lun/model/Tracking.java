@@ -18,14 +18,31 @@ public class Tracking implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser user;
 
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private AppUser user;
+    @JoinColumn(name = "action", nullable = false)
+    private ActionType action;
+
+    @Column(name = "working_status")
+    private Integer workingStatus;
+
+    public Tracking() {
+    }
+
+    public Integer getWorkingStatus() {
+        return workingStatus;
+    }
+
+    public void setWorkingStatus(Integer workingStatus) {
+        this.workingStatus = workingStatus;
+    }
 
     public ActionType getAction() {
         return action;
@@ -33,13 +50,6 @@ public class Tracking implements Serializable {
 
     public void setAction(ActionType action) {
         this.action = action;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "action", nullable = false)
-    private ActionType action;
-
-    public Tracking() {
     }
 
     public Integer getId() {
