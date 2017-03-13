@@ -12,9 +12,11 @@ import java.util.List;
 public class WorkingOff {
     private List<WorkingDay> days;
     private long currWorkingOffTime;
+    private int workingOffTime;
     private String name;
     private int year;
     private int month;
+    private int day;
 
     public WorkingOff(List<WorkingDay> workingDay, String name){
         this.days = workingDay;
@@ -23,6 +25,8 @@ public class WorkingOff {
         this.name = name;
         this.year = c.get(c.YEAR);
         this.month = c.get(c.MONTH);
+        this.day = c.get(c.DAY_OF_MONTH);
+        this.workingOffTime = setWorkingOffTime(this.year, this.month, this.day);
     }
 
     public WorkingOff(List<WorkingDay> workingDay, String name, int year, int month){
@@ -31,13 +35,13 @@ public class WorkingOff {
         this.name = name;
         this.year = year;
         this.month = month;
+        //TODO
+       /* дописать для разных годов и месяцев */
     }
 
     public long setCurrWorkingOffTime() {
         long sum = 0;
         for (WorkingDay tracking : days) {
-            long e = tracking.getWorkDay();
-            long i = tracking.workDay;
             if (tracking.getComein() == 0){
                 continue;
             }
@@ -45,7 +49,22 @@ public class WorkingOff {
         }
         return sum;
     }
+
     public long getCurrWorkingOffTime(){
         return currWorkingOffTime;
     }
+
+    public int setWorkingOffTime(int year, int month, int day){
+        int bDays;
+        BiznesDays biznesDays = new BiznesDays(year, month, day);
+        bDays = biznesDays.calculateDuration();
+        return bDays;
+    }
+
+    public int getWorkingOffTime(){
+        return workingOffTime;
+    }
+
+
+
 }

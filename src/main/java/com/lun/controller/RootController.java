@@ -38,7 +38,8 @@ public class RootController {
         model.addAttribute("workingDay", workingDay);
 
         WorkingOff workingOff = new WorkingOff(workingDay, principal.getName());
-        model.addAttribute("workingOff", workingOff.getCurrWorkingOffTime());
+        model.addAttribute("currWorkingOff", workingOff.getCurrWorkingOffTime());
+        model.addAttribute("workingOff", workingOff.getWorkingOffTime());
 
         return "index";
     }
