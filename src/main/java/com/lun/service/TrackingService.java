@@ -17,5 +17,6 @@ public interface TrackingService {
     List<WorkingDay> getWorkingDay(String userName);
     List<WorkingDay> getWorkingDayForSomeMonth(String userName, int year, int month);
     WorkingOff getWorkingOff(List<WorkingDay> workingDay, String userName);
+    void countStudent();
 //    List<Month> getMonths(String userName);
 }

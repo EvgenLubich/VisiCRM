@@ -8,6 +8,7 @@ import com.lun.util.Month;
 import com.lun.util.WorkingDay;
 import com.lun.util.WorkingOff;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -160,6 +161,12 @@ public class TrackingServiceImpl implements TrackingService {
         WorkingOff workingOff = new WorkingOff(workingDay, user, exceptionMap);
 
         return workingOff;
+    }
+
+    @Scheduled(fixedRate=2000)
+    @Override
+    public void countStudent(){
+        System.out.println("Count Student... tracking service");
     }
 
 }

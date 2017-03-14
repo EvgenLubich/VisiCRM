@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -21,6 +23,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
 @EnableWebMvc
+@EnableScheduling
 @ComponentScan("com.lun")
 @PropertySource({"classpath:application.properties"})
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
@@ -60,4 +63,6 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     public CommonsMultipartResolver multipartResolver() {
         return new CommonsMultipartResolver();
     }
+
+
 }
