@@ -33,6 +33,10 @@ public class Tracking implements Serializable {
     @Column(name = "working_status")
     private Integer workingStatus;
 
+    @Column(name = "day")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date day;
+
     public Tracking() {
     }
 
@@ -74,6 +78,14 @@ public class Tracking implements Serializable {
 
     public void setUser(AppUser user) {
         this.user = user;
+    }
+
+    public Date getDay() {
+        return day;
+    }
+
+    public void setDay(Date day) {
+        this.day = day;
     }
 
     @Override

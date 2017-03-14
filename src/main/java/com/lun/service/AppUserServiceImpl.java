@@ -49,7 +49,6 @@ public class AppUserServiceImpl implements AppUserService {
     public void addTime(String userName, int action) {
         Date d = new Date();
 
-
         AppUser user = appUserDAO.findByLogin(userName);
         Tracking tracking = new Tracking();
         ActionType actionType = actionTypeDAO.findById(action);
@@ -57,6 +56,8 @@ public class AppUserServiceImpl implements AppUserService {
         tracking.setDate(d);
         tracking.setAction(actionType);
         tracking.setWorkingStatus(1);
+        tracking.setDay(d);
+
         trackingDAO.persist(tracking);
     }
 

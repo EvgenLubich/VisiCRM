@@ -1,10 +1,9 @@
 package com.lun.service;
 
 import com.lun.dao.AppUserDAO;
+import com.lun.dao.CalendarDAO;
 import com.lun.dao.TrackingDAO;
-import com.lun.model.ActionType;
-import com.lun.model.AppUser;
-import com.lun.model.Tracking;
+import com.lun.model.*;
 import com.lun.util.Month;
 import com.lun.util.WorkingDay;
 import com.lun.util.WorkingOff;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.Calendar;
 
 /**
  * Created by lubich on 16.02.17.
@@ -23,6 +23,8 @@ public class TrackingServiceImpl implements TrackingService {
     private AppUserDAO appUserDAO;
     @Autowired
     private TrackingDAO trackingDAO;
+    @Autowired
+    private CalendarDAO calendarDAO;
 
     @Override
     public List<Tracking> getTracksComein(String userName) {
@@ -135,9 +137,27 @@ public class TrackingServiceImpl implements TrackingService {
     @Override
     public WorkingOff getWorkingOff(List<WorkingDay> workingDay, String userName) {
 
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH);
+        int dayStart = 1;
+        int dayEnd = now.getActualMaximum(now.DAY_OF_MONTH);
+
+        Calendar c1 = new GregorianCalendar(year, month, dayStart);
+        Calendar c2 = new GregorianCalendar(year, month, dayEnd);
+
+        Date start = new Date(c1.getTimeInMillis());
+        Date finish = new Date(c2.getTimeInMillis());
+
+        List<com.lun.model.Cal> calendar = calendarDAO.getOurs(start, finish);
+        Map<Date, Integer> exceptionMap = new HashMap<>();
+        for (com.lun.model.Cal day: calendar) {
+            exceptionMap.put(day.getDay(), day.getHours());
+        }
+
         AppUser user = appUserDAO.findByLogin(userName);
 
-        WorkingOff workingOff = new WorkingOff(workingDay, user);
+        WorkingOff workingOff = new WorkingOff(workingDay, user, exceptionMap);
 
         return workingOff;
     }

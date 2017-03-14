@@ -5,9 +5,7 @@ import com.lun.model.AppUser;
 import com.lun.model.Tracking;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by lubich on 09.03.17.
@@ -15,9 +13,9 @@ import java.util.List;
 public class WorkingOff {
 
     @Autowired
-    private AppUserDAO appUserDAO;
 
     private List<WorkingDay> days;
+    private Map<Date, Integer> exceptionMap;
     private long currWorkingOffTime;
     private int workingOffTime;
     private String name;
@@ -26,7 +24,9 @@ public class WorkingOff {
     private int day;
     private int startDay = 1;
 
-    public WorkingOff(List<WorkingDay> workingDay, AppUser user){
+    public WorkingOff(List<WorkingDay> workingDay, AppUser user, Map<Date, Integer> exceptionMap){
+
+        this.exceptionMap = exceptionMap;
         this.days = workingDay;
         this.currWorkingOffTime = setCurrWorkingOffTime();
         Calendar c = new GregorianCalendar();
@@ -40,7 +40,7 @@ public class WorkingOff {
             startDay = offerIn.get(offerIn.DAY_OF_MONTH);
         }
 
-        this.workingOffTime = setWorkingOffTime(this.startDay, this.year, this.month, this.day);
+        this.workingOffTime = setWorkingOffTime(this.startDay, this.year, this.month, this.day, this.exceptionMap);
     }
 
     public WorkingOff(List<WorkingDay> workingDay, String name, int year, int month){
@@ -58,8 +58,13 @@ public class WorkingOff {
         for (WorkingDay tracking : days) {
             if (tracking.getComein() == 0){
                 continue;
+            } else if (tracking.getAway() != 0) {
+                sum = sum + tracking.workDay;
+            } else if (tracking.getAway() == 0){
+                Calendar c1 = new GregorianCalendar();
+                Date date = new Date(c1.getTimeInMillis());
+                sum = sum + date.getTime() - (tracking.getComein()+tracking.getEpsent());
             }
-            sum = sum + tracking.workDay;
         }
         return sum;
     }
@@ -73,9 +78,9 @@ public class WorkingOff {
         return String.format("%d:%02d:%02d", h,m,s);
     }
 
-    public int setWorkingOffTime(int startDay, int year, int month, int day){
+    public int setWorkingOffTime(int startDay, int year, int month, int day, Map<Date, Integer> exceptionMap){
         int bDays;
-        BiznesDays biznesDays = new BiznesDays(startDay, year, month, day);
+        BiznesDays biznesDays = new BiznesDays(startDay, year, month, day, exceptionMap);
         bDays = biznesDays.calculateDuration();
         return bDays;
     }
