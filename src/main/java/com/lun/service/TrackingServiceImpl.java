@@ -157,16 +157,41 @@ public class TrackingServiceImpl implements TrackingService {
         }
 
         AppUser user = appUserDAO.findByLogin(userName);
-
         WorkingOff workingOff = new WorkingOff(workingDay, user, exceptionMap);
 
         return workingOff;
     }
 
-    @Scheduled(fixedRate=2000)
+    @Override
+    public WorkingOff getWorkingOffHistory(List<WorkingDay> workingDay, String userName, int year, int month) {
+
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        int maxDays = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        Calendar c1 = new GregorianCalendar(year, month, 1);
+        Calendar c2 = new GregorianCalendar(year, month, maxDays);
+
+        Date start = new Date(c1.getTimeInMillis());
+        Date finish = new Date(c2.getTimeInMillis());
+
+        List<com.lun.model.Cal> calendar = calendarDAO.getOurs(start, finish);
+        Map<Date, Integer> exceptionMap = new HashMap<>();
+        for (com.lun.model.Cal day: calendar) {
+            exceptionMap.put(day.getDay(), day.getHours());
+        }
+
+        AppUser user = appUserDAO.findByLogin(userName);
+        WorkingOff workingOff = new WorkingOff(workingDay, user, exceptionMap, year, month);
+
+        return workingOff;
+    }
+
+    /*  @Scheduled(fixedRate=2000)
     @Override
     public void countStudent(){
         System.out.println("Count Student... tracking service");
-    }
+    }*/
 
 }

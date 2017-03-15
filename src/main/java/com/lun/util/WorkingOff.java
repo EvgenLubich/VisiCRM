@@ -1,9 +1,6 @@
 package com.lun.util;
 
-import com.lun.dao.AppUserDAO;
 import com.lun.model.AppUser;
-import com.lun.model.Tracking;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -12,13 +9,10 @@ import java.util.*;
  */
 public class WorkingOff {
 
-    @Autowired
-
     private List<WorkingDay> days;
     private Map<Date, Integer> exceptionMap;
     private long currWorkingOffTime;
     private int workingOffTime;
-    private String name;
     private int year;
     private int month;
     private int day;
@@ -43,14 +37,25 @@ public class WorkingOff {
         this.workingOffTime = setWorkingOffTime(this.startDay, this.year, this.month, this.day, this.exceptionMap);
     }
 
-    public WorkingOff(List<WorkingDay> workingDay, String name, int year, int month){
+    public WorkingOff(List<WorkingDay> workingDay, AppUser user, Map<Date, Integer> exceptionMap, int year, int month){
+
+        this.exceptionMap = exceptionMap;
         this.days = workingDay;
         this.currWorkingOffTime = setCurrWorkingOffTime();
-        this.name = name;
+        Calendar c = new GregorianCalendar();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
         this.year = year;
         this.month = month;
-        //TODO
-       /* дописать для разных годов и месяцев */
+        this.day = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+        Calendar offerIn = new GregorianCalendar();
+        offerIn.setTime(user.getOfferin());
+
+        if (offerIn.get(offerIn.YEAR) == this.year && offerIn.get(offerIn.MONTH) == this.month){
+            startDay = offerIn.get(offerIn.DAY_OF_MONTH);
+        }
+
+        this.workingOffTime = setWorkingOffTime(this.startDay, this.year, this.month, this.day, this.exceptionMap);
     }
 
     public long setCurrWorkingOffTime() {
@@ -88,7 +93,5 @@ public class WorkingOff {
     public int getWorkingOffTime(){
         return workingOffTime;
     }
-
-
 
 }
