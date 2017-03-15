@@ -188,10 +188,42 @@ public class TrackingServiceImpl implements TrackingService {
         return workingOff;
     }
 
-    /*  @Scheduled(fixedRate=2000)
-    @Override
-    public void countStudent(){
-        System.out.println("Count Student... tracking service");
-    }*/
+//    @Scheduled(fixedRate=2000)
+//    @Override
+//    public void countStudent(){
+//        AppUser user = appUserDAO.findByLogin(userName);
+//        List<WorkingDay> workingDay = new ArrayList<>();
+//
+//        Calendar c = new GregorianCalendar();
+//        int year = c.get(c.YEAR);
+//        int month = c.get(c.MONTH);
+//        int today = c.get(c.DAY_OF_MONTH);
+//        int day = 1;
+//
+//        Calendar c1 = new GregorianCalendar(year, month, day);
+//        Calendar c2 = new GregorianCalendar(year, month, day);
+//
+//
+//        for (int i = 1; i<= today; i++) {
+//            if(i>1){
+//                c1.add(Calendar.DAY_OF_YEAR, 1);
+//            }
+//            Date start = new Date(c1.getTimeInMillis());
+//            c2.add(Calendar.DAY_OF_YEAR, 1);
+//            Date finish = new Date(c2.getTimeInMillis());
+//
+//
+//            Map<Date, List<Tracking>> trackingListPerDayMap = new HashMap<>();
+//
+//
+//            List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
+//            trackingListPerDayMap.put(start, trackingListPerDay);
+//
+//            workingDay.add(new WorkingDay(trackingListPerDayMap));
+//
+//        }
+//
+//        return workingDay;
+//    }
 
 }
