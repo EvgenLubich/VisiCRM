@@ -1,5 +1,6 @@
 package com.lun.service;
 
+import com.lun.dao.ActionTypeDAO;
 import com.lun.dao.AppUserDAO;
 import com.lun.dao.CalendarDAO;
 import com.lun.dao.TrackingDAO;
@@ -10,6 +11,7 @@ import com.lun.util.WorkingOff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.Calendar;
@@ -26,6 +28,8 @@ public class TrackingServiceImpl implements TrackingService {
     private TrackingDAO trackingDAO;
     @Autowired
     private CalendarDAO calendarDAO;
+    @Autowired
+    private ActionTypeDAO actionTypeDAO;
 
     @Override
     public List<Tracking> getTracksComein(String userName) {
@@ -188,42 +192,72 @@ public class TrackingServiceImpl implements TrackingService {
         return workingOff;
     }
 
-//    @Scheduled(fixedRate=2000)
-//    @Override
-//    public void countStudent(){
-//        AppUser user = appUserDAO.findByLogin(userName);
-//        List<WorkingDay> workingDay = new ArrayList<>();
-//
-//        Calendar c = new GregorianCalendar();
-//        int year = c.get(c.YEAR);
-//        int month = c.get(c.MONTH);
-//        int today = c.get(c.DAY_OF_MONTH);
-//        int day = 1;
-//
-//        Calendar c1 = new GregorianCalendar(year, month, day);
-//        Calendar c2 = new GregorianCalendar(year, month, day);
-//
-//
-//        for (int i = 1; i<= today; i++) {
-//            if(i>1){
-//                c1.add(Calendar.DAY_OF_YEAR, 1);
-//            }
-//            Date start = new Date(c1.getTimeInMillis());
-//            c2.add(Calendar.DAY_OF_YEAR, 1);
-//            Date finish = new Date(c2.getTimeInMillis());
-//
-//
-//            Map<Date, List<Tracking>> trackingListPerDayMap = new HashMap<>();
-//
-//
-//            List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
-//            trackingListPerDayMap.put(start, trackingListPerDay);
-//
-//            workingDay.add(new WorkingDay(trackingListPerDayMap));
-//
-//        }
-//
-//        return workingDay;
-//    }
+    //@Scheduled(cron = "* 30 12 * * *")
+    @Scheduled(fixedDelay=20000)
+    @Override
+    @Transactional
+    public void countStudent(){
+        List<AppUser> users = appUserDAO.findAllUsers();
+
+        Calendar c1 = new GregorianCalendar();
+        Calendar c2 = new GregorianCalendar();
+        c2.add(Calendar.DAY_OF_YEAR, 1);
+
+        for (AppUser user: users){
+
+            String name = user.getLogin();
+            AppUser test = appUserDAO.findByLogin(name);
+
+            Date start = new Date(c1.getTimeInMillis());
+            Date finish = new Date(c2.getTimeInMillis());
+
+            Tracking tracking = new Tracking();
+            ActionType actionType = actionTypeDAO.findById(4);
+
+            List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
+            int count = trackingListPerDay.size()-1;
+
+            if (count == -1) {
+                continue;
+            }
+            String action = trackingListPerDay.get(trackingListPerDay.size()-1).getAction().getType();
+
+
+            if ( trackingListPerDay.isEmpty() || trackingListPerDay == null) {
+                continue;
+            }
+            if (action.equals("gone")){
+                continue;
+            }
+            if (action.equals("comein")){
+                tracking.setUser(test);
+                tracking.setDate(trackingListPerDay.get(count).getDate());
+                tracking.setAction(actionType);
+                tracking.setWorkingStatus(1);
+                tracking.setDay(trackingListPerDay.get(count).getDate());
+
+                trackingDAO.persist(tracking);
+            }
+            if (action.equals("away")){
+                tracking.setUser(test);
+                tracking.setDate(trackingListPerDay.get(count).getDate());
+                tracking.setAction(actionType);
+                tracking.setWorkingStatus(1);
+                tracking.setDay(trackingListPerDay.get(count).getDate());
+
+                trackingDAO.persist(tracking);
+            }
+            if (action.equals("returned")){
+                tracking.setUser(test);
+                tracking.setDate(trackingListPerDay.get(count).getDate());
+                tracking.setAction(actionType);
+                tracking.setWorkingStatus(1);
+                //tracking.setDay(trackingListPerDay.get(count).getDate());
+
+                trackingDAO.persist(tracking);
+            }
+        }
+
+    }
 
 }

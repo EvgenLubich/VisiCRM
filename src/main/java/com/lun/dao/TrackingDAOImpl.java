@@ -27,7 +27,6 @@ public class TrackingDAOImpl implements TrackingDAO{
         query.setParameter("user_id", userId);
         query.setParameter("start", start, TemporalType.DATE);
         query.setParameter("finish", finish, TemporalType.DATE);
-        //query.setParameter("date", day);
         try {
         query.setMaxResults(1);
             return (Tracking) query.getSingleResult();

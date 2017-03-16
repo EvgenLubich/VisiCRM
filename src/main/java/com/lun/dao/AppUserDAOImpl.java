@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.List;
 
 /**
  * Created by lubich on 09.02.17.
@@ -39,6 +40,16 @@ public class AppUserDAOImpl implements AppUserDAO {
         query.setParameter("login", login);
         try {
             return (AppUser) query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<AppUser> findAllUsers(){
+        Query query = em.createQuery("SELECT u from AppUser u");
+        try {
+            return query.getResultList();
         } catch (Exception e) {
             return null;
         }

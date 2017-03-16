@@ -62,7 +62,7 @@ public class AppUser {
         this.time_tracking = time_tracking;
     }
 
-    @OneToMany(mappedBy = "user"/*, cascade = CascadeType.ALL, fetch = FetchType.EAGER*/)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Tracking> time_tracking;
 
     public AppUser() {}
@@ -139,4 +139,5 @@ public class AppUser {
     public void setOfferout(Date offerout) {
         this.offerout = offerout;
     }
+
 }
