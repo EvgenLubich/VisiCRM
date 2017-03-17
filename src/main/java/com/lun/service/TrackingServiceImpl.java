@@ -192,8 +192,8 @@ public class TrackingServiceImpl implements TrackingService {
         return workingOff;
     }
 
-    //@Scheduled(cron = "* 30 12 * * *")
-    @Scheduled(fixedDelay=20000)
+    @Scheduled(cron = "* 50 12 * * *")
+    //@Scheduled(fixedDelay=20000)
     @Override
     @Transactional
     public void countStudent(){
