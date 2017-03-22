@@ -197,6 +197,7 @@ public class TrackingServiceImpl implements TrackingService {
     @Override
     @Transactional
     public void countStudent(){
+        System.out.println("START");
         List<AppUser> users = appUserDAO.findAllUsers();
 
         Calendar c1 = new GregorianCalendar();
