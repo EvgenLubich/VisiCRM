@@ -53,12 +53,12 @@
 
         <div class="row">
             <div class="form-actions floatRight">
+                <a href="<c:url value='/' />">Cancel</a>  or
                 <input type="submit" value="Register" class="btn btn-primary btn-sm"/>
             </div>
-
+        </div>
 
     </form>
-    <a href="/comein">Пришел</a>
 </div>
 </body>
 </html>

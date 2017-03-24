@@ -76,7 +76,7 @@
                         <td> - </td>
                     </c:when>
                     <c:otherwise>
-                        <td><fmt:formatDate value="${comein}" pattern="HH:mm:ss" timeZone="GMT+2"/>  </td>
+                        <td><a href="/<fmt:formatDate value="${comein}" pattern="HH:mm:ss" timeZone="GMT+2"/>"><fmt:formatDate value="${comein}" pattern="HH:mm:ss" timeZone="GMT+2"/></a>  </td>
                     </c:otherwise>
                 </c:choose>
                 <c:choose>
