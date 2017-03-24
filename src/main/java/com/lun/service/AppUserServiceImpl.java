@@ -43,6 +43,17 @@ public class AppUserServiceImpl implements AppUserService {
         appUserDAO.persist(appUser);
     }
 
+    @Override
+    public Map<String, Integer> getAllUsers(){
+        Map<String, Integer> usersStatusMap = new TreeMap<>();
+
+        List<AppUser> users = appUserDAO.findAllUsers();
+        for (AppUser user: users){
+            int status = getUserStatus(user.getLogin());
+            usersStatusMap.put(user.getLogin(), status);
+        }
+        return usersStatusMap;
+    }
 
     @Override
     @Transactional
@@ -64,9 +75,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     @Transactional
     public int getUserStatus(String userName){
-        //notUsed
+
         Date d = new Date();
-        //
+
         Calendar c = new GregorianCalendar();
         int year = c.get(c.YEAR);
         int month = c.get(c.MONTH);

@@ -3,6 +3,7 @@ package com.lun.controller;
 /**
  * Created by lubich on 10.02.17.
  */
+import com.lun.model.AppUser;
 import com.lun.model.Tracking;
 import com.lun.service.TrackingService;
 import com.lun.util.*;
@@ -18,6 +19,7 @@ import com.lun.service.AppUserService;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class RootController {
@@ -90,6 +92,13 @@ public class RootController {
         } catch (Exception e) {
             return "redirect:/adduser";
         }
+    }
+
+    @RequestMapping("/admin")
+    public String admin(Model model, Principal principal){
+        Map<String, Integer> usersStatusMap = appUserService.getAllUsers();
+        model.addAttribute("usersStatusMap", usersStatusMap);
+        return "admin";
     }
 
     @RequestMapping("/comein")
