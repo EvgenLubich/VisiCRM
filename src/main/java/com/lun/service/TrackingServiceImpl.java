@@ -80,7 +80,7 @@ public class TrackingServiceImpl implements TrackingService {
     public List<WorkingDay> getWorkingDayForSomeMonth(String userName, int year, int month) {
         AppUser user = appUserDAO.findByLogin(userName);
         //AppUser offerDate = appUserDAO.findUserOfferDate(userName);
-        List<WorkingDay> workingDay = new ArrayList<>();
+        List<WorkingDay> workingDayList = new ArrayList<>();
 
         int y = year;
         int m = month;
@@ -128,15 +128,17 @@ public class TrackingServiceImpl implements TrackingService {
 
             Map<Date, List<Tracking>> trackingListPerDayMap = new HashMap<>();
 
+            //TODO
+            //calendarDAO.isAWeekEnd
 
             List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
             trackingListPerDayMap.put(start, trackingListPerDay);
 
-            workingDay.add(new WorkingDay(trackingListPerDayMap));
+            workingDayList.add(new WorkingDay(trackingListPerDayMap));
 
         }
 
-        return workingDay;
+        return workingDayList;
     }
 
     @Override
