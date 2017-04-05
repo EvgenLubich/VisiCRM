@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,18 @@ public class CalendarDAOImpl implements CalendarDAO {
         query.setParameter("finish", finish, TemporalType.DATE);
         try {
             return query.getResultList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Cal isAWeekEnd(Date start){
+        Query query = em.createQuery("SELECT c FROM Cal c WHERE c.date = :start ");
+        query.setParameter("start", start, TemporalType.DATE);
+
+        try {
+            return (Cal) query.getSingleResult();
         } catch (Exception e) {
             return null;
         }

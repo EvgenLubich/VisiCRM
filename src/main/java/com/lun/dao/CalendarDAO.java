@@ -12,4 +12,5 @@ import java.util.Map;
 public interface CalendarDAO {
 
     List<Cal> getOurs(Date start, Date finish);
+    Cal isAWeekEnd(Date start);
 }

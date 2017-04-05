@@ -46,7 +46,7 @@
     <br>
 
 
-    <table class="table table-striped"">
+    <table class="table table-striped">
         <thead>
         <tr>
             <th><b>Дата</b></th>
@@ -67,9 +67,13 @@
             <jsp:setProperty name="away" property="time" value="${workingDays.away}"/>
             <jsp:setProperty name="epsent" property="time" value="${workingDays.epsent}"/>
             <jsp:setProperty name="workDay" property="time" value="${workingDays.workDay}"/>
+
+            ${workingDays.hours}
+
             <tr>
 
-                <td>${workingDays.date}</td>
+
+                <td>${workingDays.date1}</td>
                 <td>${workingDays.day}</td>
                 <c:choose>
                     <c:when test="${comein == 'Thu Jan 01 03:00:00 EET 1970'}">
@@ -104,6 +108,9 @@
                     </c:otherwise>
                 </c:choose>
             </tr>
+
+
+
         </c:forEach>
     </tbody>
     </table>

@@ -9,23 +9,27 @@ public class WorkingDay {
 
     private Map<Date, List<Tracking>> dayTracksMap;
 
+    public String hours;
     private String date;
     public String day;
     private long epsent;
     public long workDay;
     private long comein;
-//    private DateTime dateTime;
     private long away;
 
+    //public boolean isWEnd;
 
-    public WorkingDay(Map<Date, List<Tracking>> dayTracks) {
+    public WorkingDay(Map<Date, List<Tracking>> dayTracks, int hours) {
         this.dayTracksMap = dayTracks;
+        this.hours = getDay();
         this.day = getDay();
         this.date = getDate();
         this.comein = getComein();
         this.away = getAway();
         this.epsent = getEpsent();
         this.workDay = getWorkDay();
+
+//        this.isWEnd = isWeekend();
     }
 
     public String getDay() {
@@ -103,11 +107,20 @@ public class WorkingDay {
         return 0;
     }
 
+//    public boolean isWeekend() {
+//        if (hours == 0 || hours == -1) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
+
     @Override
     public String toString() {
         return "WorkingDay{" +
-                "dayTracksMap=" + dayTracksMap +
                 ", date='" + date + '\'' +
+                ", hours='" + hours + '\'' +
+
                 ", day='" + day + '\'' +
                 ", epsent=" + epsent +
                 ", workDay=" + workDay +

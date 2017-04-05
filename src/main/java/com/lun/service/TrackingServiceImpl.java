@@ -65,11 +65,19 @@ public class TrackingServiceImpl implements TrackingService {
 
             Map<Date, List<Tracking>> trackingListPerDayMap = new HashMap<>();
 
+            Cal isWeekend = calendarDAO.isAWeekEnd(start);
+            int hours;
+            try {
+                hours = isWeekend.getHours();
+            } catch (Exception e){
+                hours = -1;
+            }
+
 
             List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
             trackingListPerDayMap.put(start, trackingListPerDay);
 
-            workingDay.add(new WorkingDay(trackingListPerDayMap));
+            workingDay.add(new WorkingDay(trackingListPerDayMap, hours));
 
         }
 
@@ -129,12 +137,14 @@ public class TrackingServiceImpl implements TrackingService {
             Map<Date, List<Tracking>> trackingListPerDayMap = new HashMap<>();
 
             //TODO
-            //calendarDAO.isAWeekEnd
+            Cal isWeekend = calendarDAO.isAWeekEnd(start);
+            int hours = isWeekend.getHours();
+
 
             List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
             trackingListPerDayMap.put(start, trackingListPerDay);
 
-            workingDayList.add(new WorkingDay(trackingListPerDayMap));
+            workingDayList.add(new WorkingDay(trackingListPerDayMap, hours));
 
         }
 
