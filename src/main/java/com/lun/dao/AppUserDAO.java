@@ -13,4 +13,6 @@ public interface AppUserDAO {
     void persist(AppUser appUser);
     AppUser findUserOfferDate(String login);
     List<AppUser> findAllUsers();
+    void deleteUser(AppUser appUser);
+    void updateUser(String login, String firstName, String lastName, String password, String role);
 }

@@ -1,17 +1,11 @@
 package com.lun.service;
 
-import com.lun.dao.ActionTypeDAO;
-import com.lun.dao.AppUserDAO;
-import com.lun.dao.TrackingDAO;
-import com.lun.model.ActionType;
-import com.lun.model.AppUser;
-import com.lun.model.Tracking;
-import com.lun.model.UserRole;
+import com.lun.dao.*;
+import com.lun.model.*;
 import com.lun.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.lun.dao.UserRoleDAO;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -29,30 +23,71 @@ public class AppUserServiceImpl implements AppUserService {
     private TrackingDAO trackingDAO;
     @Autowired
     private ActionTypeDAO actionTypeDAO;
+    @Autowired
+    private CalendarDAO calendarDAO;
 
 
     @Override
     @Transactional
-    public void registerUser(String login, String password, String role) {
+    public void registerUser(String login, String firstName, String lastName, String password, String role) {
 
         Date d = new Date();
         UserRole userRole = userRoleDAO.find(role);
         Set<UserRole> roleSet = new HashSet<>();
         roleSet.add(userRole);
-        AppUser appUser = new AppUser(login, APPUtil.encodePassword(password), roleSet, d);
+        AppUser appUser = new AppUser(login, firstName, lastName, APPUtil.encodePassword(password), roleSet, d);
         appUserDAO.persist(appUser);
     }
 
     @Override
-    public Map<String, Integer> getAllUsers(){
-        Map<String, Integer> usersStatusMap = new TreeMap<>();
+    @Transactional
+    public void updateUser(String login, String firstName, String lastName, String password, String role){
+        AppUser user = getUser(login);
+        user.setName(firstName);
+        user.setSurname(lastName);
+        //user.setLogin(login);
+        //user.setPassword( APPUtil.encodePassword(password));
+        appUserDAO.persist(user);
+       // appUserDAO.updateUser(login, firstName, lastName, password, role);
+    }
 
-        List<AppUser> users = appUserDAO.findAllUsers();
-        for (AppUser user: users){
-            int status = getUserStatus(user.getLogin());
-            usersStatusMap.put(user.getLogin(), status);
+    @Override
+    @Transactional
+    public AppUser getUser(String login){
+        AppUser user = appUserDAO.findByLogin(login);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(String login){
+        appUserDAO.deleteUser(appUserDAO.findByLogin(login));
+    }
+
+    @Override
+    @Transactional
+    public void deleteDate(Date date){
+        calendarDAO.deleteDate(calendarDAO.findByDate(date));
+    }
+
+    @Override
+    @Transactional
+    public void addDate(Date date, int time){
+        Cal cal = new Cal();
+        cal.setDay(date);
+        cal.setHours(time);
+
+        calendarDAO.persist(cal);
+    }
+
+    @Override
+    public Boolean isDayExist(Date date){
+        Cal cal = calendarDAO.findByDate(date);
+        if (cal == null){
+            return false;
+        } else {
+            return true;
         }
-        return usersStatusMap;
     }
 
     @Override
@@ -73,15 +108,48 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    @Transactional
-    public int getUserStatus(String userName){
+    public Map<String, UserForAdmin> getAllUsers(String date){
+        Map<String, UserForAdmin> usersStatusMap = new TreeMap<>();
 
+        List<AppUser> users = appUserDAO.findAllUsers();
+        for (AppUser user: users){
+            UserForAdmin userForAdmin = getUserStatus(user.getLogin(), date);
+            usersStatusMap.put(userForAdmin.getLastName() + " " + userForAdmin.getFirstName(), userForAdmin);
+        }
+        return usersStatusMap;
+    }
+
+    @Override
+    public String getStringDate(){
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        return date;
+    }
+
+    @Override
+    @Transactional
+    public UserForAdmin getUserStatus(String userName, String date){
+
+
+        UserForAdmin userForAdmin = new UserForAdmin();
+        int statusId;
+        ActionType actionId;
         Date d = new Date();
 
-        Calendar c = new GregorianCalendar();
-        int year = c.get(c.YEAR);
-        int month = c.get(c.MONTH);
-        int day = c.get(c.DAY_OF_MONTH);
+        int year;
+        int month;
+        int day;
+
+        if (date.equals("")) {
+            Calendar c = new GregorianCalendar();
+            year = c.get(c.YEAR);
+            month = c.get(c.MONTH);
+            day = c.get(c.DAY_OF_MONTH);
+        } else {
+            String [] stringDate = date.split("-");
+            year = Integer.parseInt(stringDate[0]);
+            month = Integer.parseInt(stringDate[1])-1;
+            day = Integer.parseInt(stringDate[2]);
+        }
 
         Calendar c2 = new GregorianCalendar(year, month, day);
         Date start = new Date(c2.getTimeInMillis());
@@ -90,13 +158,20 @@ public class AppUserServiceImpl implements AppUserService {
 
         AppUser user = appUserDAO.findByLogin(userName);
         try {
-            Tracking status = trackingDAO.getStatusByUserId(user.getId(), d, start, finish);
-            ActionType actionId = status.getAction();
-            int statusId = actionId.getId();
-            return statusId;
+            Tracking tracking = trackingDAO.getStatusByUserId(user.getId(), d, start, finish);
+            actionId = tracking.getAction();
+            statusId = actionId.getId();
+            userForAdmin.setStatus(statusId);
         } catch (Exception e){
-            return 5;
+            userForAdmin.setStatus(5);
         }
+        List<Tracking> tracking = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
+        userForAdmin.setTrackings(tracking);
+        userForAdmin.setFirstName(user.getName());
+        userForAdmin.setLastName(user.getSurname());
+        userForAdmin.setLogin(user.getLogin());
+
+        return userForAdmin;
     }
 
     @Override

@@ -1,11 +1,10 @@
 package com.lun.service;
 
 import com.lun.model.AppUser;
-import com.lun.util.WorkingDay;
-import com.lun.util.WorkingDays;
-import com.lun.util.WorkingMonthes;
-import com.lun.util.WorkingYear;
+import com.lun.model.Tracking;
+import com.lun.util.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +13,18 @@ import java.util.Map;
  */
 public interface AppUserService {
 
-    void registerUser(String login, String password, String role);
+    void registerUser(String login, String firstName, String lastName, String password, String role);
     void addTime(String userName, int action);
-    int getUserStatus(String userName);
+    UserForAdmin getUserStatus(String userName, String date);
     WorkingYear getYears(String userName);
     WorkingMonthes getMonthes(String userName, int year);
     WorkingDays getDays(String userName, int year, String month);
-    Map<String, Integer> getAllUsers();
+    Map<String, UserForAdmin> getAllUsers(String date);
+    void deleteUser(String login);
+    void addDate(Date date, int time);
+    void deleteDate(Date date);
+    String getStringDate();
+    Boolean isDayExist(Date date);
+    AppUser getUser(String login);
+    void updateUser(String login, String firstName, String lastName, String password, String role);
 }

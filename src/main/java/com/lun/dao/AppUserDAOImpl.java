@@ -35,6 +35,22 @@ public class AppUserDAOImpl implements AppUserDAO {
     }
 
     @Override
+    public void updateUser(String login, String firstName, String lastName, String password, String role){
+        Query query = em.createQuery("UPDATE AppUser u SET u.firstName = :firstName, u.lastName = :lastName, u.password = :password, u.role = :role WHERE u.login = :login");
+        query.setParameter("login", login);
+        query.setParameter("firstName", firstName);
+        query.setParameter("lastName", lastName);
+        query.setParameter("password", password);
+        query.setParameter("role", role);
+        query.executeUpdate();
+    }
+
+    @Override
+    public void deleteUser(AppUser appUser){
+        em.remove(appUser);
+    }
+
+    @Override
     public AppUser findUserOfferDate(String login) {
         Query query = em.createQuery("SELECT u FROM AppUser u WHERE u.login = :login");
         query.setParameter("login", login);

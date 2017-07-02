@@ -11,6 +11,14 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <!-- версия 3.7 - стабильная,  3.8 в "beta 2" (на 18 мая 2011г).  -->
+            <version>3.7</version>
+        </dependency>
+
+
         <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
         <dependency>
             <groupId>joda-time</groupId>

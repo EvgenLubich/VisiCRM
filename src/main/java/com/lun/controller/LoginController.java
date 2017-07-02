@@ -15,6 +15,7 @@ import com.lun.service.AppUserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Calendar;
 
 @Controller
 @RequestMapping("/")
@@ -25,15 +26,19 @@ public class LoginController {
 
 
     @RequestMapping("/login")
-    public String login(HttpServletRequest request, Principal principal) {
-        System.out.println(principal);
-
-        String referrer = request.getHeader("Referer");
-        if (referrer == null || referrer.contains("signup")) {
-            referrer = "/";
+    public String login(HttpServletRequest request) {
+        Calendar cal = Calendar.getInstance();
+        int time = cal.get(Calendar.HOUR_OF_DAY);
+        if (time != 24) {
+            String referrer = request.getHeader("Referer");
+            if (referrer == null || referrer.contains("signup")) {
+                referrer = "/";
+            }
+            request.getSession().setAttribute("url_prior_login", referrer);
+            return "login";
+        } else {
+            return "unauthorized";
         }
-        request.getSession().setAttribute("url_prior_login", referrer);
-        return "login";
     }
 
 

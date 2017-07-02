@@ -5,6 +5,7 @@ import com.lun.dao.AppUserDAO;
 import com.lun.dao.CalendarDAO;
 import com.lun.dao.TrackingDAO;
 import com.lun.model.*;
+import com.lun.util.DayFinalizer;
 import com.lun.util.Month;
 import com.lun.util.WorkingDay;
 import com.lun.util.WorkingOff;
@@ -13,6 +14,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Calendar;
 
@@ -37,6 +40,26 @@ public class TrackingServiceImpl implements TrackingService {
         List<Tracking> tracksComein = trackingDAO.getTracksComein(user.getId());
 
         return tracksComein;
+    }
+
+    @Override
+    @Transactional
+    public void updateTime(String userLogin, String date, String timeOld, String time){
+        AppUser user = appUserDAO.findByLogin(userLogin);
+        String oldDateStr = date + " " + timeOld;
+        String newDateStr = date + " " + time + ":00";
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date dateOld = formatter.parse(oldDateStr);
+            Date dateNew = formatter.parse(newDateStr);
+            Tracking tracking = trackingDAO.updateTime(user.getId(), dateOld, dateNew);
+            tracking.setDate(dateNew);
+            trackingDAO.persist(tracking);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -65,11 +88,20 @@ public class TrackingServiceImpl implements TrackingService {
 
             Map<Date, List<Tracking>> trackingListPerDayMap = new HashMap<>();
 
+//Подсветка выходных
+            Cal isWeekend = calendarDAO.isAWeekEnd(start);
+            int hours;
+            try {
+                hours = isWeekend.getHours();
+            } catch (Exception e){
+                hours = -1;
+            }
+
 
             List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
             trackingListPerDayMap.put(start, trackingListPerDay);
 
-            workingDay.add(new WorkingDay(trackingListPerDayMap));
+            workingDay.add(new WorkingDay(trackingListPerDayMap, hours));
 
         }
 
@@ -85,14 +117,11 @@ public class TrackingServiceImpl implements TrackingService {
         int y = year;
         int m = month;
 
-
-
         Calendar offerIn = new GregorianCalendar();
         offerIn.setTime(user.getOfferin());
         int monthStart = offerIn.get(offerIn.MONTH);
         int yearStart = offerIn.get(offerIn.YEAR);
         int dayStart = offerIn.get(offerIn.DAY_OF_MONTH);
-
 
         Calendar c = new GregorianCalendar();
 
@@ -102,7 +131,7 @@ public class TrackingServiceImpl implements TrackingService {
         int day;
 
         if(y == yearStart && m == monthStart) {
-            day = dayStart;
+            day = 1;
             c.set(Calendar.YEAR, y);
             c.set(Calendar.MONTH, m);
             maxDays = c.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -117,8 +146,9 @@ public class TrackingServiceImpl implements TrackingService {
             c2 = new GregorianCalendar(year, month, day);
         }
 
-        for (int i = day; i<= maxDays; i++) {
-            if(i>1){
+        int i, count;
+        for (i = day, count = 1; i<= maxDays; i++, count++) {
+            if(count>1){
                 c1.add(Calendar.DAY_OF_YEAR, 1);
             }
             Date start = new Date(c1.getTimeInMillis());
@@ -130,11 +160,18 @@ public class TrackingServiceImpl implements TrackingService {
 
             //TODO
             //calendarDAO.isAWeekEnd
+            Cal isWeekend = calendarDAO.isAWeekEnd(start);
+            int hours;
+            try {
+                hours = isWeekend.getHours();
+            } catch (Exception e){
+                hours = -1;
+            }
 
             List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
             trackingListPerDayMap.put(start, trackingListPerDay);
 
-            workingDayList.add(new WorkingDay(trackingListPerDayMap));
+            workingDayList.add(new WorkingDay(trackingListPerDayMap, hours));
 
         }
 
@@ -194,7 +231,105 @@ public class TrackingServiceImpl implements TrackingService {
         return workingOff;
     }
 
-    @Scheduled(cron = "* 50 12 * * *")
+    @Override
+    public Map<String, Integer> getCallendar(){
+        Map<String, Integer> calendarMap = new TreeMap<>();
+
+        List<Cal> calendar = calendarDAO.getCalendar();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (Cal day: calendar){
+            Date date = day.getDay();
+            Integer hours = day.getHours();
+            calendarMap.put(format.format(date), hours);
+        }
+        return calendarMap;
+    }
+
+    @Override
+    public List<Date> getDaysBetweenDates(Date startdate, Date enddate) {
+        List<Date> dates = new ArrayList<Date>();
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(startdate);
+
+        while (calendar.getTime().before(enddate)) {
+            Date result = calendar.getTime();
+            dates.add(result);
+            calendar.add(Calendar.DATE, 1);
+        }
+        return dates;
+    }
+
+    @Override
+    @Transactional
+    public void addHospital(Date start, Date end, String userLogin){
+
+        AppUser user = appUserDAO.findByLogin(userLogin);
+        ActionType actionType = actionTypeDAO.findById(7);
+        List<Date> dates = this.getDaysBetweenDates(start, end);
+
+        for (Date date: dates) {
+            Tracking tracking = new Tracking();
+            tracking.setUser(user);
+            tracking.setDate(date);
+            tracking.setAction(actionType);
+            tracking.setWorkingStatus(1);
+
+            trackingDAO.persist(tracking);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void addVacation(Date start, Date end, String userLogin){
+
+        AppUser user = appUserDAO.findByLogin(userLogin);
+        ActionType actionType = actionTypeDAO.findById(6);
+        List<Date> dates = this.getDaysBetweenDates(start, end);
+
+        for (Date date: dates) {
+            Tracking tracking = new Tracking();
+            tracking.setUser(user);
+            tracking.setDate(date);
+            tracking.setAction(actionType);
+            tracking.setWorkingStatus(1);
+
+            trackingDAO.persist(tracking);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void addCommanding(Date start, Date end, String userLogin){
+
+        AppUser user = appUserDAO.findByLogin(userLogin);
+        ActionType actionType = actionTypeDAO.findById(8);
+        List<Date> dates = this.getDaysBetweenDates(start, end);
+
+        for (Date date: dates) {
+            Tracking tracking = new Tracking();
+            tracking.setUser(user);
+            tracking.setDate(date);
+            tracking.setAction(actionType);
+            tracking.setWorkingStatus(1);
+
+            trackingDAO.persist(tracking);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteTrack(Date date, String userLogin){
+        AppUser user = appUserDAO.findByLogin(userLogin);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, 1);
+        Date finish = c.getTime();
+
+        trackingDAO.deleteTrack(user.getId(), date, finish);
+    }
+
+    @Scheduled(cron = "0 21 23 * * *")
     //@Scheduled(fixedDelay=20000)
     @Override
     @Transactional
@@ -206,6 +341,14 @@ public class TrackingServiceImpl implements TrackingService {
         Calendar c2 = new GregorianCalendar();
         c2.add(Calendar.DAY_OF_YEAR, 1);
 
+        Cal isWeekend = calendarDAO.isAWeekEnd(new Date(c1.getTimeInMillis()));
+        int hours;
+        try {
+            hours = isWeekend.getHours();
+        } catch (Exception e){
+            hours = -1;
+        }
+
         for (AppUser user: users){
 
             String name = user.getLogin();
@@ -214,7 +357,7 @@ public class TrackingServiceImpl implements TrackingService {
             Date start = new Date(c1.getTimeInMillis());
             Date finish = new Date(c2.getTimeInMillis());
 
-            Tracking tracking = new Tracking();
+
             ActionType actionType = actionTypeDAO.findById(4);
 
             List<Tracking> trackingListPerDay = trackingDAO.getTracksForOneDay(user.getId(), start, finish);
@@ -223,6 +366,10 @@ public class TrackingServiceImpl implements TrackingService {
             if (count == -1) {
                 continue;
             }
+
+
+
+            DayFinalizer dayFinalizer = new DayFinalizer(trackingListPerDay, hours);
             String action = trackingListPerDay.get(trackingListPerDay.size()-1).getAction().getType();
 
 
@@ -230,9 +377,41 @@ public class TrackingServiceImpl implements TrackingService {
                 continue;
             }
             if (action.equals("gone")){
+                if (dayFinalizer.isDinner()){
+                    Tracking trackingStart = new Tracking();
+                    Tracking trackingEnd = new Tracking();
+
+                    Date lastTrack = trackingListPerDay.get(count).getDate();
+                    Calendar calendarStart = Calendar.getInstance();
+                    Calendar calendarEnd = Calendar.getInstance();
+
+                    calendarStart.setTime(lastTrack);
+                    calendarStart.add(Calendar.MINUTE, 1);
+
+                    calendarEnd.setTime(lastTrack);
+                    calendarEnd.add(Calendar.MINUTE, 26);
+
+                    Date startDate = new Date(calendarStart.getTimeInMillis());
+                    Date finishDate = new Date(calendarEnd.getTimeInMillis());
+
+                    trackingStart.setUser(test);
+                    trackingStart.setDate(startDate);
+                    trackingStart.setAction(actionTypeDAO.findById(2));
+                    trackingStart.setWorkingStatus(1);
+                    trackingStart.setDay(startDate);
+                    trackingDAO.persist(trackingStart);
+
+                    trackingEnd.setUser(test);
+                    trackingEnd.setDate(finishDate);
+                    trackingEnd.setAction(actionTypeDAO.findById(3));
+                    trackingEnd.setWorkingStatus(1);
+                    trackingEnd.setDay(finishDate);
+                    trackingDAO.persist(trackingEnd);
+                }
                 continue;
             }
             if (action.equals("comein")){
+                Tracking tracking = new Tracking();
                 tracking.setUser(test);
                 tracking.setDate(trackingListPerDay.get(count).getDate());
                 tracking.setAction(actionType);
@@ -242,25 +421,56 @@ public class TrackingServiceImpl implements TrackingService {
                 trackingDAO.persist(tracking);
             }
             if (action.equals("away")){
-                tracking.setUser(test);
-                tracking.setDate(trackingListPerDay.get(count).getDate());
-                tracking.setAction(actionType);
-                tracking.setWorkingStatus(1);
-                tracking.setDay(trackingListPerDay.get(count).getDate());
+                Tracking trackingReturned = new Tracking();
+                Tracking trackingGone = new Tracking();
+                Date lastTrack = trackingListPerDay.get(count).getDate();
+                Calendar calendarReturned = Calendar.getInstance();
+                Calendar calendarGone = Calendar.getInstance();
 
-                trackingDAO.persist(tracking);
+                if (dayFinalizer.isDinner()){
+                    calendarReturned.setTime(lastTrack);
+                    calendarReturned.add(Calendar.MINUTE, 25);
+                    calendarGone.setTime(lastTrack);
+                    calendarGone.add(Calendar.SECOND, 10);
+                } else {
+                    calendarReturned.setTime(lastTrack);
+                    calendarReturned.add(Calendar.SECOND, 10);
+                    calendarGone.setTime(lastTrack);
+                    calendarGone.add(Calendar.SECOND, 20);
+                }
+
+                Date startDate = new Date(calendarReturned.getTimeInMillis());
+                Date finishDate = new Date(calendarGone.getTimeInMillis());
+
+                trackingReturned.setUser(test);
+                trackingReturned.setDate(startDate);
+                trackingReturned.setAction(actionTypeDAO.findById(3));
+                trackingReturned.setWorkingStatus(1);
+                trackingReturned.setDay(startDate);
+                trackingDAO.persist(trackingReturned);
+
+                trackingGone.setUser(test);
+                trackingGone.setDate(finishDate);
+                trackingGone.setAction(actionType);
+                trackingGone.setWorkingStatus(1);
+                trackingGone.setDay(finishDate);
+                trackingDAO.persist(trackingGone);
             }
             if (action.equals("returned")){
+                Tracking tracking = new Tracking();
+                Date lastTrack = trackingListPerDay.get(count).getDate();
+                Calendar calendarGone = Calendar.getInstance();
+                calendarGone.setTime(lastTrack);
+                calendarGone.add(Calendar.SECOND, 10);
+                Date finishDate = new Date(calendarGone.getTimeInMillis());
+
                 tracking.setUser(test);
-                tracking.setDate(trackingListPerDay.get(count).getDate());
+                tracking.setDate(finishDate);
                 tracking.setAction(actionType);
                 tracking.setWorkingStatus(1);
-                //tracking.setDay(trackingListPerDay.get(count).getDate());
 
                 trackingDAO.persist(tracking);
             }
         }
-
     }
-
 }

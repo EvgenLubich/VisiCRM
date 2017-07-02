@@ -88,13 +88,4 @@ public class Tracking implements Serializable {
         this.day = day;
     }
 
-    @Override
-    public String toString() {
-        return "Tracking{" +
-                "id=" + id +
-                ", date='" + date + '\'' +
-                ", user=" + user +
-                ", action=" + action +
-                '}'+"<br>";
-    }
 }

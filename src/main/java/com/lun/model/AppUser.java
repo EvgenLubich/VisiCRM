@@ -4,10 +4,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by lubich on 08.02.17.
@@ -15,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Users")
-public class AppUser {
+public class AppUser implements Comparable<AppUser> {
 
     @Id
     @GeneratedValue
@@ -29,10 +26,10 @@ public class AppUser {
     @Column(nullable = false, length = 200)
     private String password;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 50)
     private String surname;
 
     @Column(nullable = false, length = 10)
@@ -67,17 +64,31 @@ public class AppUser {
 
     public AppUser() {}
 
-    public AppUser(String login, String password, Set<UserRole> userRoles, Date offerin) {
+    public AppUser(String login, String firstName, String lastName, String password, Set<UserRole> userRoles, Date offerin) {
         this.login = login;
         this.password = password;
         this.userRoles = new HashSet<>(userRoles);
         this.offerin = offerin;
+        this.name = firstName;
+        this.surname = lastName;
     }
 
     public AppUser(String login, String password) {
         this.login = login;
         this.password = password;
 
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setUserRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
     public String getPassword() {
@@ -140,4 +151,31 @@ public class AppUser {
         this.offerout = offerout;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppUser user = (AppUser) o;
+        return id == user.id &&
+                Objects.equals(login, user.login) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(name, user.name) &&
+                Objects.equals(surname, user.surname) &&
+                Objects.equals(patronymic, user.patronymic) &&
+                Objects.equals(offerin, user.offerin) &&
+                Objects.equals(offerout, user.offerout) &&
+                Objects.equals(userRoles, user.userRoles) &&
+                Objects.equals(time_tracking, user.time_tracking);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, login, password, name, surname, patronymic, offerin, offerout, userRoles, time_tracking);
+    }
+
+
+    @Override
+    public int compareTo(AppUser appUser) {
+        return appUser.getLogin().length() > login.length() ? 0 : 1;
+    }
 }

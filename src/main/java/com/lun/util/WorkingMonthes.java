@@ -28,7 +28,7 @@ public class WorkingMonthes {
         int yearStart = c2.get(c2.YEAR);
 
         if (yearEnd == year) {
-            int count = c.get(c.MONTH);
+            int count = (c.get(c.MONTH))-1;
             for (int i = 1; i <= count+1; i++){
                 monthes.add(java.time.Month.of(i).toString());
             }

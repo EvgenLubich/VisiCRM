@@ -16,27 +16,43 @@
     <div class="authbar">
         <span>Hello ${currentLogin}</span> <span class="floatRight"><a href="<c:url value="/logout" />">Logout</a></span>
     </div>
+    <div style="float: left">
     <sec:authorize access="hasRole('ADMIN')">
-    <div><a href="<c:url value="/adduser" />">Добавить пользователя</a></div>
+    <a href="<c:url value="/adduser" />">Добавить пользователя</a><br>
     </sec:authorize>
+    <sec:authorize access="hasRole('ADMIN') or hasRole('DBA')">
+        <a href="<c:url value="/admin" />">Статус сотрудников</a><br>
+    </sec:authorize>
+    <sec:authorize access="hasRole('ADMIN')">
+        <a href="<c:url value="/calendar" />">Календарь исключений</a>
+    </sec:authorize>
+        </div>
 
 
     <c:if test="${status == 5}" >
-        <a href="/comein">Пришел</a>
+    <div style="text-align: center;">
+        <a class="btn btn-success" href="/comein">Пришел</a>
+    </div>
     </c:if>
     <c:if test="${status == 1 || status == 3}" >
-        <a href="/away">Отошел</a> или <a href="/gone">Ушел</a>
+        <div style="float: right">
+        <a class="btn btn-warning" href="/away">Отошел</a> или <a class="btn btn-danger" href="/gone">Ушел</a>
+        </div>
     </c:if>
     <c:if test="${status == 2}" >
-        <a href="/returned">Вернулся</a>
+            <div style="float: right">
+        <a class="btn btn-success" href="/returned">Вернулся</a>
+            </div>
     </c:if>
     <c:if test="${status == 4}" >
-        <p>Хорошего отдыха</p>
+                <div style="float: right">
+        <p><b>Хорошего отдыха</b></p>
+                </div>
     </c:if>
 
 
     <br>
-    <div>
+    <div style="clear: both;">
          Статистика за:
     <c:forEach items="${workingYear}" var="workingYears">
         <a href="/statistic-${workingYears}">${workingYears}</a>
@@ -45,8 +61,21 @@
 
     <br>
 
+    <sec:authorize access="hasRole('ADMIN')">
+    <form role="form" class="form-inline" action="/addfile" method="post">
+        <div class="form-group">
+            <label for="year">Год</label>
+            <input type="number" class="form-control" name="year" id="year">
+        </div>
+        <div class="form-group">
+            <label for="month">Месяц</label>
+            <input type="number" class="form-control" name="month" id="month">
+        </div>
+        <button type="submit" class="btn btn-success">Создать</button>
+    </form>
+    </sec:authorize>
 
-    <table class="table table-striped"">
+    <table class="table table-striped">
         <thead>
         <tr>
             <th><b>Дата</b></th>
@@ -67,28 +96,80 @@
             <jsp:setProperty name="away" property="time" value="${workingDays.away}"/>
             <jsp:setProperty name="epsent" property="time" value="${workingDays.epsent}"/>
             <jsp:setProperty name="workDay" property="time" value="${workingDays.workDay}"/>
-            <tr>
+
+            <c:if test="${workingDays.isVacation() == true}" >
+                <c:if test="${workingDays.isEnd() == true}" >
+                <tr style="color: red">
+                </c:if>
+                <c:if test="${workingDays.isEnd() == false}" >
+                    <tr>
+                </c:if>
+                    <td>${workingDays.date}</td>
+                    <td>${workingDays.day}</td>
+                    <td> O </td>
+                    <td> O </td>
+                    <td> O </td>
+                    <td> O </td>
+                </tr>
+            </c:if>
+            <c:if test="${workingDays.isHospital() == true}" >
+                <c:if test="${workingDays.isEnd() == true}" >
+                    <tr style="color: red">
+                </c:if>
+                <c:if test="${workingDays.isEnd() == false}" >
+                    <tr>
+                </c:if>
+                    <td>${workingDays.date}</td>
+                    <td>${workingDays.day}</td>
+                    <td> Б </td>
+                    <td> Б </td>
+                    <td> Б </td>
+                    <td> Б </td>
+                </tr>
+            </c:if>
+            <c:if test="${workingDays.isCommanding() == true}" >
+                <c:if test="${workingDays.isEnd() == true}" >
+                    <tr style="color: red">
+                </c:if>
+                <c:if test="${workingDays.isEnd() == false}" >
+                    <tr>
+                </c:if>
+                <td>${workingDays.date}</td>
+                <td>${workingDays.day}</td>
+                <td> K </td>
+                <td> К </td>
+                <td> К </td>
+                <td> К </td>
+                </tr>
+            </c:if>
+            <c:if test="${workingDays.isVacation() == false && workingDays.isHospital() == false && workingDays.isCommanding() == false}" >
+                <c:if test="${workingDays.isEnd() == true}" >
+                    <tr style="color: red">
+                </c:if>
+                <c:if test="${workingDays.isEnd() == false}" >
+                    <tr>
+                </c:if>
 
                 <td>${workingDays.date}</td>
                 <td>${workingDays.day}</td>
                 <c:choose>
-                    <c:when test="${comein == 'Thu Jan 01 03:00:00 EET 1970'}">
+                    <c:when test="${comein == 'Thu Jan 01 02:00:00 EET 1970'}">
                         <td> - </td>
                     </c:when>
                     <c:otherwise>
-                        <td><a href="/<fmt:formatDate value="${comein}" pattern="HH:mm:ss" timeZone="GMT+2"/>"><fmt:formatDate value="${comein}" pattern="HH:mm:ss" timeZone="GMT+2"/></a>  </td>
+                        <td><fmt:formatDate value="${comein}" pattern="HH:mm:ss" timeZone="GMT+3"/>  </td>
                     </c:otherwise>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${away == 'Thu Jan 01 03:00:00 EET 1970'}">
+                    <c:when test="${away == 'Thu Jan 01 02:00:00 EET 1970'}">
                         <td> - </td>
                     </c:when>
                     <c:otherwise>
-                        <td><fmt:formatDate value="${away}" pattern="HH:mm:ss" timeZone="GMT+2"/>  </td>
+                        <td><fmt:formatDate value="${away}" pattern="HH:mm:ss" timeZone="GMT+3"/>  </td>
                     </c:otherwise>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${comein == 'Thu Jan 01 03:00:00 EET 1970'}">
+                    <c:when test="${comein == 'Thu Jan 01 02:00:00 EET 1970'}">
                         <td> - </td>
                     </c:when>
                     <c:otherwise>
@@ -96,23 +177,26 @@
                     </c:otherwise>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${comein == 'Thu Jan 01 03:00:00 EET 1970'}">
+                    <c:when test="${comein == 'Thu Jan 01 02:00:00 EET 1970'}">
                         <td> - </td>
                     </c:when>
                     <c:otherwise>
                         <td><fmt:formatDate value="${workDay}" pattern="HH:mm:ss" timeZone="GMT"/>  </td>
                     </c:otherwise>
                 </c:choose>
-            </tr>
+                </tr>
+            </c:if>
         </c:forEach>
     </tbody>
     </table>
-
-
-    ${currWorkingOff}
-    ${workingOff}
+    <div> Отработанно <b>${currWorkingOff}</b> часов из <b>${workingOff}</b></div>
 
 </div>
+<sec:authorize access="hasRole('ADMIN')">
+${ip}<br>
+    ${arr}
+
+</sec:authorize>
 
 
 

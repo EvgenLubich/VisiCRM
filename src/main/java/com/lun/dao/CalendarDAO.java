@@ -12,4 +12,9 @@ import java.util.Map;
 public interface CalendarDAO {
 
     List<Cal> getOurs(Date start, Date finish);
+    List<Cal> getCalendar();
+    Cal isAWeekEnd(Date start);
+    void persist(Cal cal);
+    void deleteDate(Cal cal);
+    Cal findByDate(Date date);
 }

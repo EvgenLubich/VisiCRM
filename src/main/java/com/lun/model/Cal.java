@@ -48,4 +48,13 @@ public class Cal implements Serializable {
     public void setHours(Integer hours) {
         this.hours = hours;
     }
+
+    @Override
+    public String toString() {
+        return "Cal{" +
+                "id=" + id +
+                ", date=" + date +
+                ", hours=" + hours +
+                '}';
+    }
 }

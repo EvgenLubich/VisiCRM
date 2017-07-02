@@ -32,4 +32,46 @@ public class CalendarDAOImpl implements CalendarDAO {
             return null;
         }
     }
+
+    @Override
+    public List<Cal> getCalendar(){
+        Query query = em.createQuery("SELECT c FROM Cal c");
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Cal isAWeekEnd(Date start){
+        Query query = em.createQuery("SELECT c FROM Cal c WHERE c.date = :start ");
+        query.setParameter("start", start, TemporalType.DATE);
+        try {
+            return (Cal) query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void persist(Cal cal){
+        em.persist(cal);
+    }
+
+    @Override
+    public void deleteDate(Cal cal){
+        em.remove(cal);
+    }
+
+    @Override
+    public Cal findByDate(Date date) {
+        Query query = em.createQuery("SELECT c FROM Cal c WHERE c.date = :date ");
+        query.setParameter("date", date);
+        try {
+            return (Cal) query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

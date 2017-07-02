@@ -61,14 +61,20 @@ public class WorkingOff {
     public long setCurrWorkingOffTime() {
         long sum = 0;
         for (WorkingDay tracking : days) {
-            if (tracking.getComein() == 0){
+            if (tracking.isHospital() || tracking.isVacation() || tracking.isCommanding()){
+                sum = sum + 28800000;
+            } else if (tracking.getComein() == 0){
                 continue;
             } else if (tracking.getAway() != 0) {
                 sum = sum + tracking.workDay;
             } else if (tracking.getAway() == 0){
-                Calendar c1 = new GregorianCalendar();
-                Date date = new Date(c1.getTimeInMillis());
-                sum = sum + date.getTime() - (tracking.getComein()+tracking.getEpsent());
+                if (tracking.getComein() == 0){
+
+                } else {
+                    Calendar c1 = new GregorianCalendar();
+                    Date date = new Date(c1.getTimeInMillis());
+                    sum = sum + date.getTime() - (tracking.getComein() + tracking.getEpsent());
+                }
             }
         }
         return sum;
@@ -81,6 +87,20 @@ public class WorkingOff {
         int h = (int)(currWorkingOffTime / (3600000));
 
         return String.format("%d:%02d:%02d", h,m,s);
+    }
+
+    public String getDiffWorkingOffTime(){
+        long diff = currWorkingOffTime - (workingOffTime * 3600000);
+
+        if (diff>0) {
+            int s = (int) (diff / 1000) % 60;
+            int m = (int) (diff / (1000 * 60)) % 60;
+            int h = (int) (diff / (3600000));
+
+            return String.format("%d:%02d:%02d", h, m, s);
+        } else {
+            return "0";
+        }
     }
 
     public int setWorkingOffTime(int startDay, int year, int month, int day, Map<Date, Integer> exceptionMap){
