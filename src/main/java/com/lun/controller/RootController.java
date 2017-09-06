@@ -38,40 +38,13 @@ public class RootController {
     @Autowired
     private ReportService reportService;
 
-//    @RequestMapping("/")
-//    public String index(HttpServletRequest request, Model model, Principal principal) {
-//
-//        String ip = request.getRemoteAddr();
-//        String [] arr = ip.split("\\.");
-//        String visiIp = arr[0] + "." + arr[1] + "." +arr[2];
-//        if (visiIp.equals("193.200.248") || (principal.getName().equals("wweeww")) || (principal.getName().equals("lubich-un"))){
-//            model.addAttribute("currentLogin", principal.getName());
-//            int status = appUserService.getUserStatus(principal.getName(), "").getStatus();
-//            model.addAttribute("status", status);
-//            WorkingYear workingYear = appUserService.getYears(principal.getName());
-//            model.addAttribute("workingYear", workingYear.getYears());
-//            List<WorkingDay> workingDay = trackingService.getWorkingDay(principal.getName());
-//            model.addAttribute("workingDay", workingDay);
-//
-//            //WorkingOff workingOff = new WorkingOff(workingDay, principal.getName());
-//            WorkingOff workingOff = trackingService.getWorkingOff(workingDay, principal.getName());
-//            model.addAttribute("currWorkingOff", workingOff.getCurrWorkingOffTime());
-//            model.addAttribute("workingOff", workingOff.getWorkingOffTime());
-//
-//            model.addAttribute("if", "if");
-//            model.addAttribute("ip", ip);
-//
-//            return "index";
-//        } else {
-//            return "redirect:/logout";
-//        }
-//    }
-
-
     @RequestMapping("/")
     public String index(HttpServletRequest request, Model model, Principal principal) {
 
-
+        String ip = request.getRemoteAddr();
+        String [] arr = ip.split("\\.");
+        String visiIp = arr[0] + "." + arr[1] + "." +arr[2];
+        if (visiIp.equals("193.200.248") || (principal.getName().equals("wweeww")) || (principal.getName().equals("lubich-un"))){
             model.addAttribute("currentLogin", principal.getName());
             int status = appUserService.getUserStatus(principal.getName(), "").getStatus();
             model.addAttribute("status", status);
@@ -86,11 +59,38 @@ public class RootController {
             model.addAttribute("workingOff", workingOff.getWorkingOffTime());
 
             model.addAttribute("if", "if");
-            model.addAttribute("ip", "ip");
+            model.addAttribute("ip", ip);
 
             return "index";
-
+        } else {
+            return "redirect:/logout";
+        }
     }
+
+
+//    @RequestMapping("/")
+//    public String index(HttpServletRequest request, Model model, Principal principal) {
+//
+//
+//            model.addAttribute("currentLogin", principal.getName());
+//            int status = appUserService.getUserStatus(principal.getName(), "").getStatus();
+//            model.addAttribute("status", status);
+//            WorkingYear workingYear = appUserService.getYears(principal.getName());
+//            model.addAttribute("workingYear", workingYear.getYears());
+//            List<WorkingDay> workingDay = trackingService.getWorkingDay(principal.getName());
+//            model.addAttribute("workingDay", workingDay);
+//
+//            //WorkingOff workingOff = new WorkingOff(workingDay, principal.getName());
+//            WorkingOff workingOff = trackingService.getWorkingOff(workingDay, principal.getName());
+//            model.addAttribute("currWorkingOff", workingOff.getCurrWorkingOffTime());
+//            model.addAttribute("workingOff", workingOff.getWorkingOffTime());
+//
+//            model.addAttribute("if", "if");
+//            model.addAttribute("ip", "ip");
+//
+//            return "index";
+//
+//    }
 
 
     @RequestMapping(value = "/statistic-{year}")

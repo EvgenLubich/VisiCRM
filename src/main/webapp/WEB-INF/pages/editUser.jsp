@@ -62,9 +62,9 @@
                 <label class="col-md-3 control-lable" for="role">Roles</label>
                 <div class="col-md-7">
                     <select id="role" name="role" class="form-control input-sm">
+                        <option value="ROLE_USER">USER</option>
                         <option value="ROLE_ADMIN">ADMIN</option>
                         <option value="ROLE_DBA">DBA</option>
-                        <option value="ROLE_USER">USER</option>
                     </select>
                 </div>
             </div>

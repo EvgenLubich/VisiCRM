@@ -11,4 +11,5 @@ public final class APPUtil {
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
+
 }

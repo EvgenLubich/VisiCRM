@@ -45,8 +45,14 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser user = getUser(login);
         user.setName(firstName);
         user.setSurname(lastName);
-        //user.setLogin(login);
-        //user.setPassword( APPUtil.encodePassword(password));
+        user.setLogin(login);
+        UserRole userRole = userRoleDAO.find(role);
+        Set<UserRole> roleSet = new HashSet<>();
+        roleSet.add(userRole);
+        user.setUserRoles(roleSet);
+        if (!password.equals("")) {
+            user.setPassword( APPUtil.encodePassword(password));
+        }
         appUserDAO.persist(user);
        // appUserDAO.updateUser(login, firstName, lastName, password, role);
     }
